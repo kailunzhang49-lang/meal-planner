@@ -42,7 +42,7 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/meal-planner">
       <div className="min-h-screen bg-warm-50">
         <AnimatedBackground />
         <CursorSpotlight />

@@ -1,7 +1,22 @@
-import type { DailyMealPlan, FavoriteMeal, Meal } from '../types'
+import type { DailyMealPlan, FavoriteMeal, Meal, UserSettings } from '../types'
 
 const MEAL_PLANS_KEY = 'mealPlanner_mealPlans'
 const FAVORITES_KEY = 'mealPlanner_favorites'
+const COOKED_KEY = 'mealPlanner_cooked'
+const SETTINGS_KEY = 'mealPlanner_settings'
+
+// --- Default Settings ---
+
+const DEFAULT_SETTINGS: UserSettings = {
+  apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY || '',
+  foodRestrictions: `【食材限制 - 非常重要】
+- 严禁使用任何鱼类（包括淡水鱼和海鱼，如鲤鱼、鲫鱼、草鱼、带鱼、鲅鱼等）
+- 严禁使用任何海鲜（贝类、鱿鱼、螃蟹、海带、紫菜、海虹、蛤蜊、扇贝等）
+- 虾：大虾（对虾/明虾/青虾）可以使用，但出现频率要非常低，一周最多一两次
+- 优先使用：猪肉、鸡肉、牛肉、鸡蛋、豆腐、蔬菜、菌菇等家常食材`,
+  breakfastBudget: '10-15',
+  dinnerBudget: '10-15',
+}
 
 // --- Meal Plans ---
 
@@ -14,14 +29,35 @@ export function getMealPlans(): DailyMealPlan[] {
   }
 }
 
+export function getMealPlansByDate(dateStr: string): DailyMealPlan[] {
+  return getMealPlans()
+    .filter((p) => p.date === dateStr)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+
 export function getMealPlanByDate(dateStr: string): DailyMealPlan | undefined {
-  return getMealPlans().find((p) => p.date === dateStr)
+  const plans = getMealPlansByDate(dateStr)
+  return plans[0] // latest plan
 }
 
 export function saveMealPlan(plan: DailyMealPlan): void {
-  const plans = getMealPlans().filter((p) => p.date !== plan.date)
+  const plans = getMealPlans()
   plans.push(plan)
   localStorage.setItem(MEAL_PLANS_KEY, JSON.stringify(plans))
+}
+
+export function deleteMealPlan(planId: string): void {
+  const plans = getMealPlans().filter((p) => p.id !== planId)
+  localStorage.setItem(MEAL_PLANS_KEY, JSON.stringify(plans))
+}
+
+export function updateMealPlanCooked(planId: string, cooked: boolean): void {
+  const plans = getMealPlans()
+  const plan = plans.find((p) => p.id === planId)
+  if (plan) {
+    plan.cooked = cooked
+    localStorage.setItem(MEAL_PLANS_KEY, JSON.stringify(plans))
+  }
 }
 
 export function getAllPlanDates(): Set<string> {
@@ -40,7 +76,7 @@ export function getFavorites(): FavoriteMeal[] {
 }
 
 export function isFavorite(meal: Meal): boolean {
-  return getFavorites().some((f) => f.meal.name === meal.name && f.meal.type === meal.type)
+  return getFavorites().some((f) => f.id === meal.id)
 }
 
 export function addFavorite(meal: Meal): void {
@@ -55,8 +91,78 @@ export function addFavorite(meal: Meal): void {
 }
 
 export function removeFavorite(meal: Meal): void {
-  const favs = getFavorites().filter(
-    (f) => !(f.meal.name === meal.name && f.meal.type === meal.type),
-  )
+  const favs = getFavorites().filter((f) => f.id !== meal.id)
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs))
+}
+
+// --- Cooked Meals (individual meal tracking) ---
+
+export function getCookedMeals(): Set<string> {
+  try {
+    const raw = localStorage.getItem(COOKED_KEY)
+    return raw ? new Set(JSON.parse(raw)) : new Set()
+  } catch {
+    return new Set()
+  }
+}
+
+export function isMealCooked(mealId: string): boolean {
+  return getCookedMeals().has(mealId)
+}
+
+export function toggleMealCooked(mealId: string): void {
+  const cooked = getCookedMeals()
+  if (cooked.has(mealId)) {
+    cooked.delete(mealId)
+  } else {
+    cooked.add(mealId)
+  }
+  localStorage.setItem(COOKED_KEY, JSON.stringify([...cooked]))
+}
+
+// --- Settings ---
+
+export function getSettings(): UserSettings {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY)
+    if (raw) {
+      return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) }
+    }
+  } catch {
+    // ignore
+  }
+  return { ...DEFAULT_SETTINGS }
+}
+
+export function saveSettings(settings: UserSettings): void {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
+}
+
+// --- Export / Import ---
+
+export function exportAllData(): string {
+  return JSON.stringify({
+    version: 2,
+    mealPlans: getMealPlans(),
+    favorites: getFavorites(),
+    cooked: [...getCookedMeals()],
+    settings: getSettings(),
+    exportedAt: new Date().toISOString(),
+  })
+}
+
+export function importAllData(jsonStr: string): void {
+  const data = JSON.parse(jsonStr)
+  if (data.mealPlans) {
+    localStorage.setItem(MEAL_PLANS_KEY, JSON.stringify(data.mealPlans))
+  }
+  if (data.favorites) {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(data.favorites))
+  }
+  if (data.cooked) {
+    localStorage.setItem(COOKED_KEY, JSON.stringify(data.cooked))
+  }
+  if (data.settings) {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(data.settings))
+  }
 }

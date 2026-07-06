@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion'
 import { NavLink } from 'react-router-dom'
-import { CalendarDays, Clock, Heart } from 'lucide-react'
+import { CalendarDays, Clock, Heart, Settings as SettingsIcon } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 const links = [
   { to: '/', label: '日历', icon: CalendarDays },
   { to: '/history', label: '历史', icon: Clock },
   { to: '/favorites', label: '收藏', icon: Heart },
+  { to: '/settings', label: '设置', icon: SettingsIcon },
 ]
 
 export function Navbar() {
@@ -41,12 +42,12 @@ export function Navbar() {
                   key={link.to}
                   to={link.to}
                   end={link.to === '/'}
-                  className="relative px-3 py-1.5"
+                  className="relative px-2.5 py-1.5"
                 >
                   {({ isActive }) => (
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1">
                       <link.icon
-                        size={16}
+                        size={15}
                         className={cn(
                           'transition-colors',
                           isActive ? 'text-sage-600' : 'text-warm-400',
@@ -54,7 +55,7 @@ export function Navbar() {
                       />
                       <span
                         className={cn(
-                          'text-sm font-medium transition-colors',
+                          'text-xs font-medium transition-colors',
                           isActive ? 'text-sage-600' : 'text-warm-500',
                         )}
                       >

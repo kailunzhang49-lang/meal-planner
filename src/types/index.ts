@@ -17,7 +17,7 @@ export interface MealStaple {
 export interface Meal {
   id: string
   name: string
-  type: 'breakfast' | 'dinner'
+  type: 'breakfast' | 'lunch' | 'dinner'
   ingredients: Ingredient[]
   instructions: string[]
   estimatedCost: number
@@ -27,14 +27,24 @@ export interface Meal {
 }
 
 export interface DailyMealPlan {
+  id: string
   date: string // YYYY-MM-DD
   breakfast: Meal
+  lunch?: Meal
   dinner: Meal
   createdAt: string // ISO
+  cooked?: boolean
 }
 
 export interface FavoriteMeal {
   id: string
   meal: Meal
   addedAt: string // ISO
+}
+
+export interface UserSettings {
+  apiKey: string
+  foodRestrictions: string
+  breakfastBudget: string
+  dinnerBudget: string
 }

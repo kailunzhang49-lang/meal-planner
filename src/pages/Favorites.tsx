@@ -1,17 +1,31 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, Coffee, Soup, X, ChefHat } from 'lucide-react'
+import { Heart, Coffee, Soup, Sun, X, ChefHat, Check } from 'lucide-react'
 import { cn } from '../lib/utils'
-import { getFavorites, removeFavorite } from '../lib/storage'
+import { getFavorites, removeFavorite, isMealCooked, toggleMealCooked } from '../lib/storage'
 import type { FavoriteMeal, Meal } from '../types'
 import { EmptyState } from '../components/EmptyState'
+
+const mealIcons = { breakfast: Coffee, lunch: Sun, dinner: Soup }
+const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐' }
+const mealColors = {
+  breakfast: { bg: 'bg-amber-100', text: 'text-amber-600' },
+  lunch: { bg: 'bg-orange-100', text: 'text-orange-600' },
+  dinner: { bg: 'bg-sage-100', text: 'text-sage-600' },
+}
 
 export function Favorites() {
   const [favs, setFavs] = useState<FavoriteMeal[]>([])
   const [removingId, setRemovingId] = useState<string | null>(null)
+  const [cookedSet, setCookedSet] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     setFavs(getFavorites())
+    const ids = new Set<string>()
+    getFavorites().forEach((f) => {
+      if (isMealCooked(f.meal.id)) ids.add(f.meal.id)
+    })
+    setCookedSet(ids)
   }, [])
 
   const handleRemove = (meal: Meal) => {
@@ -21,6 +35,16 @@ export function Favorites() {
       setFavs(getFavorites())
       setRemovingId(null)
     }, 300)
+  }
+
+  const handleToggleCooked = (mealId: string) => {
+    toggleMealCooked(mealId)
+    setCookedSet((prev) => {
+      const next = new Set(prev)
+      if (next.has(mealId)) next.delete(mealId)
+      else next.add(mealId)
+      return next
+    })
   }
 
   if (favs.length === 0) {
@@ -69,7 +93,9 @@ export function Favorites() {
           {favs.map((fav) => {
             const meal = fav.meal
             const isRemoving = removingId === meal.id
-            const Icon = meal.type === 'breakfast' ? Coffee : Soup
+            const cooked = cookedSet.has(meal.id)
+            const Icon = mealIcons[meal.type]
+            const colors = mealColors[meal.type]
 
             return (
               <motion.div
@@ -94,26 +120,20 @@ export function Favorites() {
                   <div
                     className={cn(
                       'w-10 h-10 rounded-xl flex items-center justify-center shrink-0',
-                      meal.type === 'breakfast'
-                        ? 'bg-amber-100 text-amber-600'
-                        : 'bg-sage-100 text-sage-600',
+                      colors.bg, colors.text,
                     )}
                   >
                     <Icon size={18} />
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-warm-700 truncate">{meal.name}</h3>
+                    <h3 className="font-semibold text-warm-700 truncate flex items-center gap-2">
+                      {meal.name}
+                      {cooked && <span className="text-xs text-sage-500 bg-sage-50 px-1.5 py-0.5 rounded shrink-0">已做</span>}
+                    </h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <span
-                        className={cn(
-                          'text-xs px-2 py-0.5 rounded-full font-medium',
-                          meal.type === 'breakfast'
-                            ? 'bg-amber-100 text-amber-600'
-                            : 'bg-sage-100 text-sage-600',
-                        )}
-                      >
-                        {meal.type === 'breakfast' ? '早餐' : '晚餐'}
+                      <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', colors.bg, colors.text)}>
+                        {mealLabels[meal.type]}
                       </span>
                       <span className="text-xs text-warm-400">约 {meal.estimatedCost} 元</span>
                     </div>
@@ -122,14 +142,25 @@ export function Favorites() {
                     )}
                   </div>
 
-                  <motion.button
-                    whileHover={{ scale: 1.15 }}
-                    whileTap={{ scale: 0.85 }}
-                    onClick={() => handleRemove(meal)}
-                    className="shrink-0 p-1.5 rounded-lg hover:bg-red-50 text-warm-300 hover:text-red-400 transition-colors"
-                  >
-                    <X size={16} />
-                  </motion.button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <motion.button
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.85 }}
+                      onClick={() => handleToggleCooked(meal.id)}
+                      className={cn('p-1.5 rounded-lg transition-colors', cooked ? 'text-sage-500 hover:bg-sage-50' : 'text-warm-300 hover:bg-warm-50 hover:text-sage-400')}
+                      title={cooked ? '取消做过' : '标记做过'}
+                    >
+                      <Check size={15} />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.85 }}
+                      onClick={() => handleRemove(meal)}
+                      className="p-1.5 rounded-lg hover:bg-red-50 text-warm-300 hover:text-red-400 transition-colors"
+                    >
+                      <X size={16} />
+                    </motion.button>
+                  </div>
                 </div>
 
                 {/* Ingredients grid */}

@@ -7,9 +7,9 @@ import { EmptyState } from '../components/EmptyState'
 import { TiltCard } from '../components/TiltCard'
 import { Confetti } from '../components/Confetti'
 import { formatDate, formatDisplayDate, isToday } from '../lib/utils'
-import { generateDailyMeals } from '../lib/api'
+import { generateDailyMeals, generateBreakfast, generateLunch, generateDinner } from '../lib/api'
 import { getMealPlanByDate, saveMealPlan, getAllPlanDates } from '../lib/storage'
-import type { DailyMealPlan } from '../types'
+import type { DailyMealPlan, Meal } from '../types'
 import { ChefHat, AlertCircle, Sparkles } from 'lucide-react'
 
 export function Home() {
@@ -17,6 +17,7 @@ export function Home() {
   const [selectedDate, setSelectedDate] = useState(today)
   const [plan, setPlan] = useState<DailyMealPlan | null>(null)
   const [loading, setLoading] = useState(false)
+  const [loadingMeal, setLoadingMeal] = useState<'breakfast' | 'lunch' | 'dinner' | null>(null)
   const [error, setError] = useState('')
   const [markedDates, setMarkedDates] = useState<Set<string>>(new Set())
   const [showConfetti, setShowConfetti] = useState(false)
@@ -39,8 +40,10 @@ export function Home() {
       const meals = await generateDailyMeals(selectedDate)
 
       const newPlan: DailyMealPlan = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2),
         date: selectedDate,
         breakfast: meals.breakfast,
+        lunch: meals.lunch,
         dinner: meals.dinner,
         createdAt: new Date().toISOString(),
       }
@@ -57,6 +60,31 @@ export function Home() {
       setLoading(false)
     }
   }, [selectedDate])
+
+  const handleRegenerateMeal = useCallback(async (mealType: 'breakfast' | 'lunch' | 'dinner') => {
+    if (!plan) return
+    setError('')
+    setLoadingMeal(mealType)
+
+    try {
+      const generators = { breakfast: generateBreakfast, lunch: generateLunch, dinner: generateDinner }
+      const newMeal = await generators[mealType](selectedDate)
+
+      const updatedPlan: DailyMealPlan = {
+        ...plan,
+        [mealType]: newMeal,
+        createdAt: new Date().toISOString(),
+      }
+
+      saveMealPlan(updatedPlan)
+      setPlan(updatedPlan)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '生成失败，请稍后重试'
+      setError(msg)
+    } finally {
+      setLoadingMeal(null)
+    }
+  }, [plan, selectedDate])
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date)
@@ -177,7 +205,7 @@ export function Home() {
             exit={{ opacity: 0 }}
             className="space-y-4"
           >
-            {[0, 1].map((i) => (
+            {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
@@ -209,14 +237,32 @@ export function Home() {
           </motion.div>
         ) : plan ? (
           <motion.div
-            key={plan.createdAt + selectedDate}
+            key={plan.id || plan.createdAt + selectedDate}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
             className="space-y-5"
           >
-            <MealCard meal={plan.breakfast} index={0} />
-            <MealCard meal={plan.dinner} index={1} />
+            <MealCard
+              meal={plan.breakfast}
+              index={0}
+              onRegenerate={() => handleRegenerateMeal('breakfast')}
+              regenerating={loadingMeal === 'breakfast'}
+            />
+            {plan.lunch && (
+              <MealCard
+                meal={plan.lunch}
+                index={1}
+                onRegenerate={() => handleRegenerateMeal('lunch')}
+                regenerating={loadingMeal === 'lunch'}
+              />
+            )}
+            <MealCard
+              meal={plan.dinner}
+              index={plan.lunch ? 2 : 1}
+              onRegenerate={() => handleRegenerateMeal('dinner')}
+              regenerating={loadingMeal === 'dinner'}
+            />
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -229,7 +275,7 @@ export function Home() {
                 <span className="text-sm text-warm-500">
                   一天预算约{' '}
                   <span className="font-semibold text-warm-700 tabular-nums">
-                    {(plan.breakfast.estimatedCost + plan.dinner.estimatedCost).toFixed(1)}
+                    {(plan.breakfast.estimatedCost + (plan.lunch?.estimatedCost || 0) + plan.dinner.estimatedCost).toFixed(1)}
                   </span>{' '}
                   元
                 </span>

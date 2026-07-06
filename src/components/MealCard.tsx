@@ -1,36 +1,64 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion'
-import { Heart, ChevronDown, Coffee, Soup, ShoppingBasket, ChefHat, Lightbulb, Banknote, Wheat } from 'lucide-react'
+import { Heart, ChevronDown, Coffee, Soup, Sun, ShoppingBasket, ChefHat, Lightbulb, Banknote, Wheat, RefreshCw, Check } from 'lucide-react'
 import { cn } from '../lib/utils'
 import type { Meal } from '../types'
-import { isFavorite, addFavorite, removeFavorite } from '../lib/storage'
+import { isFavorite, addFavorite, removeFavorite, isMealCooked, toggleMealCooked } from '../lib/storage'
 import { TiltCard } from './TiltCard'
 
 interface MealCardProps {
   meal: Meal
   index?: number
+  onRegenerate?: () => void
+  regenerating?: boolean
 }
 
-export function MealCard({ meal, index = 0 }: MealCardProps) {
+const mealIcons = {
+  breakfast: Coffee,
+  lunch: Sun,
+  dinner: Soup,
+}
+
+const mealLabels = {
+  breakfast: '早餐',
+  lunch: '午餐',
+  dinner: '晚餐',
+}
+
+const mealColors = {
+  breakfast: { bg: 'bg-amber-100', text: 'text-amber-600', badge: 'bg-amber-100 text-amber-700', glow: 'rgba(251, 191, 36, 0.25)' },
+  lunch: { bg: 'bg-orange-100', text: 'text-orange-600', badge: 'bg-orange-100 text-orange-700', glow: 'rgba(251, 146, 60, 0.25)' },
+  dinner: { bg: 'bg-sage-100', text: 'text-sage-600', badge: 'bg-sage-100 text-sage-700', glow: 'rgba(101, 147, 104, 0.3)' },
+}
+
+export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCardProps) {
   const [expanded, setExpanded] = useState(false)
   const [faved, setFaved] = useState(() => isFavorite(meal))
   const [heartAnim, setHeartAnim] = useState(false)
+  const [cooked, setCooked] = useState(() => isMealCooked(meal.id))
 
   // Animated budget counter
   const costMotion = useMotionValue(0)
   const costSpring = useSpring(costMotion, { stiffness: 80, damping: 15 })
   const [displayCost, setDisplayCost] = useState(0)
 
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       costMotion.set(meal.estimatedCost)
     }, 300 + index * 200)
-    costSpring.on('change', (v) => setDisplayCost(Math.round(v * 10) / 10))
+    const unsub = costSpring.on('change', (v) => setDisplayCost(Math.round(v * 10) / 10))
     return () => {
       costMotion.set(0)
-      timer && clearTimeout(timer)
+      clearTimeout(timer)
+      unsub()
     }
-  })
+  }, [meal.estimatedCost, index, costMotion, costSpring])
+
+  // Sync faved state when meal changes
+  useEffect(() => {
+    setFaved(isFavorite(meal))
+    setCooked(isMealCooked(meal.id))
+  }, [meal])
 
   const toggleFav = () => {
     if (faved) {
@@ -44,7 +72,13 @@ export function MealCard({ meal, index = 0 }: MealCardProps) {
     }
   }
 
-  const Icon = meal.type === 'breakfast' ? Coffee : Soup
+  const toggleCooked = () => {
+    toggleMealCooked(meal.id)
+    setCooked(!cooked)
+  }
+
+  const Icon = mealIcons[meal.type]
+  const colors = mealColors[meal.type]
   const hasDishes = meal.dishes && meal.dishes.length > 0
 
   return (
@@ -57,7 +91,7 @@ export function MealCard({ meal, index = 0 }: MealCardProps) {
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
     >
-      <TiltCard glowColor={meal.type === 'breakfast' ? 'rgba(251, 191, 36, 0.25)' : 'rgba(101, 147, 104, 0.3)'}>
+      <TiltCard glowColor={colors.glow}>
         <div className="glass card-ring rounded-2xl overflow-hidden">
           {/* Header */}
           <div className="p-5 pb-3">
@@ -66,7 +100,7 @@ export function MealCard({ meal, index = 0 }: MealCardProps) {
                 <motion.div
                   className={cn(
                     'w-10 h-10 rounded-xl flex items-center justify-center shrink-0',
-                    meal.type === 'breakfast' ? 'bg-amber-100 text-amber-600' : 'bg-sage-100 text-sage-600',
+                    colors.bg, colors.text,
                   )}
                   whileHover={{ rotate: [0, -8, 8, -4, 0], scale: 1.1 }}
                   transition={{ duration: 0.4 }}
@@ -76,13 +110,8 @@ export function MealCard({ meal, index = 0 }: MealCardProps) {
                 <div className="min-w-0">
                   <h3 className="font-semibold text-warm-800 truncate">{meal.name}</h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className={cn(
-                      'text-xs px-2 py-0.5 rounded-full font-medium',
-                      meal.type === 'breakfast'
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-sage-100 text-sage-700',
-                    )}>
-                      {meal.type === 'breakfast' ? '早餐' : '晚餐'}
+                    <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', colors.badge)}>
+                      {mealLabels[meal.type]}
                     </span>
                     <span className="text-xs text-warm-400 flex items-center gap-0.5">
                       <Banknote size={11} />
@@ -93,38 +122,72 @@ export function MealCard({ meal, index = 0 }: MealCardProps) {
                 </div>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.85 }}
-                onClick={toggleFav}
-                className="shrink-0 relative"
-              >
-                <Heart
-                  size={21}
-                  className={cn(
-                    'transition-colors duration-200',
-                    faved ? 'fill-red-400 text-red-400' : 'text-warm-300 hover:text-red-300',
+              <div className="flex items-center gap-1 shrink-0">
+                {/* Cooked toggle */}
+                <motion.button
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.85 }}
+                  onClick={toggleCooked}
+                  className="relative"
+                  title={cooked ? '标记为未做' : '标记为做过'}
+                >
+                  <Check
+                    size={19}
+                    className={cn(
+                      'transition-colors duration-200',
+                      cooked ? 'text-sage-500 fill-sage-100' : 'text-warm-300 hover:text-sage-400',
+                    )}
+                  />
+                </motion.button>
+
+                {/* Favorite */}
+                <motion.button
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.85 }}
+                  onClick={toggleFav}
+                  className="relative"
+                >
+                  <Heart
+                    size={21}
+                    className={cn(
+                      'transition-colors duration-200',
+                      faved ? 'fill-red-400 text-red-400' : 'text-warm-300 hover:text-red-300',
+                    )}
+                  />
+                  {heartAnim && (
+                    <>
+                      {[...Array(6)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-red-400"
+                          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                          animate={{
+                            x: (Math.random() - 0.5) * 40,
+                            y: (Math.random() - 0.5) * 40,
+                            opacity: 0,
+                            scale: 0,
+                          }}
+                          transition={{ duration: 0.5, ease: 'easeOut' }}
+                        />
+                      ))}
+                    </>
                   )}
-                />
-                {heartAnim && (
-                  <>
-                    {[...Array(6)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-red-400"
-                        initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                        animate={{
-                          x: (Math.random() - 0.5) * 40,
-                          y: (Math.random() - 0.5) * 40,
-                          opacity: 0,
-                          scale: 0,
-                        }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                      />
-                    ))}
-                  </>
+                </motion.button>
+
+                {/* Regenerate */}
+                {onRegenerate && (
+                  <motion.button
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.85 }}
+                    onClick={onRegenerate}
+                    disabled={regenerating}
+                    className={cn(regenerating && 'animate-spin')}
+                    title="重新生成这道菜"
+                  >
+                    <RefreshCw size={17} className={cn('text-warm-300 hover:text-sage-500 transition-colors', regenerating && 'text-sage-500')} />
+                  </motion.button>
                 )}
-              </motion.button>
+              </div>
             </div>
           </div>
 
@@ -184,7 +247,7 @@ export function MealCard({ meal, index = 0 }: MealCardProps) {
               ))}
             </div>
           ) : (
-            /* Breakfast: show ingredients */
+            /* Breakfast / Lunch: show ingredients */
             <div className="px-5 pb-2">
               <div className="flex items-center gap-1.5 mb-2">
                 <ShoppingBasket size={14} className="text-warm-400" />

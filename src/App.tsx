@@ -6,6 +6,7 @@ import { CursorSpotlight } from './components/CursorSpotlight'
 import { Home } from './pages/Home'
 import { History } from './pages/History'
 import { Favorites } from './pages/Favorites'
+import { Settings } from './pages/Settings'
 
 const pageVariants = {
   initial: { opacity: 0, y: 12, scale: 0.98 },
@@ -34,6 +35,7 @@ function AnimatedRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/history" element={<History />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </motion.div>
     </AnimatePresence>

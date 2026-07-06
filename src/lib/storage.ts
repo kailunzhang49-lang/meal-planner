@@ -9,7 +9,7 @@ const LAST_BACKUP_KEY = 'mealPlanner_lastBackup'
 // --- Default Settings ---
 
 const DEFAULT_SETTINGS: UserSettings = {
-  apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY || '',
+  apiKey: '',
   foodRestrictions: `【食材限制 - 非常重要】
 - 严禁使用任何鱼类（包括淡水鱼和海鱼，如鲤鱼、鲫鱼、草鱼、带鱼、鲅鱼等）
 - 严禁使用任何海鲜（贝类、鱿鱼、螃蟹、海带、紫菜、海虹、蛤蜊、扇贝等）

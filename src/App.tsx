@@ -1,33 +1,21 @@
-import { useEffect } from 'react'
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Navbar } from './components/Navbar'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import { AnimatedBackground } from './components/AnimatedBackground'
-import { CursorSpotlight } from './components/CursorSpotlight'
+import { BottomNav } from './components/BottomNav'
 import { NetworkStatus } from './components/NetworkStatus'
 import { Home } from './pages/Home'
 import { History } from './pages/History'
 import { Favorites } from './pages/Favorites'
-import { Settings } from './pages/Settings'
 import { ShoppingList } from './pages/ShoppingList'
 import { WeeklyView } from './pages/WeeklyView'
-import { getSettings } from './lib/storage'
+import { Settings } from './pages/Settings'
 
-const pageVariants = {
-  initial: { opacity: 0, y: 12, scale: 0.98 },
-  animate: {
-    opacity: 1, y: 0, scale: 1,
-    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-  exit: { opacity: 0, y: -12, scale: 0.98, transition: { duration: 0.2 } },
-}
-
-function AnimatedRoutes() {
-  const location = useLocation()
+export default function App() {
   return (
-    <AnimatePresence mode="wait">
-      <motion.div key={location.pathname} variants={pageVariants} initial="initial" animate="animate" exit="exit">
-        <Routes location={location}>
+    <HashRouter>
+      <AnimatedBackground />
+      <NetworkStatus />
+      <main className="max-w-lg mx-auto px-4 pt-4 pb-24 min-h-screen">
+        <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/history" element={<History />} />
           <Route path="/favorites" element={<Favorites />} />
@@ -35,36 +23,8 @@ function AnimatedRoutes() {
           <Route path="/weekly" element={<WeeklyView />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
-      </motion.div>
-    </AnimatePresence>
-  )
-}
-
-function DarkModeInit() {
-  useEffect(() => {
-    const settings = getSettings()
-    if (settings.darkMode) {
-      document.documentElement.classList.add('dark')
-    }
-  }, [])
-  return null
-}
-
-export default function App() {
-  return (
-    <HashRouter>
-      <DarkModeInit />
-      <div className="min-h-screen bg-warm-50 dark:bg-warm-900 text-warm-800 dark:text-warm-100 transition-colors duration-300">
-        <AnimatedBackground />
-        <CursorSpotlight />
-        <div className="relative">
-          <NetworkStatus />
-          <Navbar />
-          <main className="pt-2">
-            <AnimatedRoutes />
-          </main>
-        </div>
-      </div>
+      </main>
+      <BottomNav />
     </HashRouter>
   )
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { WifiOff } from 'lucide-react'
 
@@ -6,13 +6,13 @@ export function NetworkStatus() {
   const [online, setOnline] = useState(navigator.onLine)
 
   useEffect(() => {
-    const handleOnline = () => setOnline(true)
-    const handleOffline = () => setOnline(false)
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
+    const on = () => setOnline(true)
+    const off = () => setOnline(false)
+    window.addEventListener('online', on)
+    window.addEventListener('offline', off)
     return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
+      window.removeEventListener('online', on)
+      window.removeEventListener('offline', off)
     }
   }, [])
 
@@ -20,15 +20,13 @@ export function NetworkStatus() {
     <AnimatePresence>
       {!online && (
         <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800 overflow-hidden"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -50, opacity: 0 }}
+          className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-center gap-2 py-2 bg-red-900/80 backdrop-blur-sm text-red-200 text-sm"
         >
-          <div className="max-w-lg mx-auto px-4 py-2 flex items-center justify-center gap-2 text-sm text-amber-700 dark:text-amber-400">
-            <WifiOff size={14} />
-            当前无网络连接，仅可浏览已缓存的菜谱
-          </div>
+          <WifiOff size={14} />
+          当前处于离线状态
         </motion.div>
       )}
     </AnimatePresence>

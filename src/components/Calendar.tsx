@@ -17,11 +17,9 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
   const days = useMemo(() => {
     const firstDay = new Date(viewYear, viewMonth, 1).getDay()
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate()
-
     const cells: (number | null)[] = []
     for (let i = 0; i < firstDay; i++) cells.push(null)
     for (let d = 1; d <= daysInMonth; d++) cells.push(d)
-
     return cells
   }, [viewYear, viewMonth])
 
@@ -31,13 +29,8 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
     setDirection(delta)
     let m = viewMonth + delta
     let y = viewYear
-    if (m < 0) {
-      m = 11
-      y--
-    } else if (m > 11) {
-      m = 0
-      y++
-    }
+    if (m < 0) { m = 11; y-- }
+    else if (m > 11) { m = 0; y++ }
     setViewMonth(m)
     setViewYear(y)
   }
@@ -48,20 +41,16 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
     exit: (d: number) => ({ x: d > 0 ? -40 : 40, opacity: 0 }),
   }
 
-  const monthNames = [
-    '一月', '二月', '三月', '四月', '五月', '六月',
-    '七月', '八月', '九月', '十月', '十一月', '十二月',
-  ]
+  const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
 
   return (
     <div className="select-none">
-      {/* Header */}
       <div className="flex items-center justify-between mb-4 px-1">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => goMonth(-1)}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-warm-500 hover:bg-warm-100 transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-ink-3 hover:bg-surface-4/50 transition-colors"
         >
           <ChevronLeft size={18} />
         </motion.button>
@@ -75,7 +64,7 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
             animate="center"
             exit="exit"
             transition={{ duration: 0.2 }}
-            className="text-base font-semibold text-warm-800"
+            className="text-base font-bold text-ink-1 tracking-wide"
           >
             {viewYear}年 {monthNames[viewMonth]}
           </motion.span>
@@ -85,22 +74,20 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => goMonth(1)}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-warm-500 hover:bg-warm-100 transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-ink-3 hover:bg-surface-4/50 transition-colors"
         >
           <ChevronRight size={18} />
         </motion.button>
       </div>
 
-      {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-2">
         {['日', '一', '二', '三', '四', '五', '六'].map((w) => (
-          <div key={w} className="text-center text-xs font-medium text-warm-400 py-1.5">
+          <div key={w} className="text-center text-[10px] font-medium text-ink-4 uppercase tracking-wider py-1.5">
             {w}
           </div>
         ))}
       </div>
 
-      {/* Days grid */}
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={`${viewYear}-${viewMonth}`}
@@ -113,9 +100,7 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
           className="grid grid-cols-7 gap-1"
         >
           {days.map((day, i) => {
-            if (day === null) {
-              return <div key={`empty-${i}`} className="aspect-square" />
-            }
+            if (day === null) return <div key={`empty-${i}`} className="aspect-square" />
 
             const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
             const isSelected = dateStr === selectedDate
@@ -131,19 +116,19 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
                 onClick={() => !isFuture && onSelect(dateStr)}
                 disabled={isFuture}
                 className={cn(
-                  'relative aspect-square rounded-xl flex flex-col items-center justify-center text-sm transition-colors',
-                  isSelected && 'bg-sage-500 text-white shadow-sm',
-                  !isSelected && isTodayDate && 'text-sage-600 font-semibold',
-                  !isSelected && !isTodayDate && !isFuture && 'text-warm-700 hover:bg-warm-100',
-                  isFuture && 'text-warm-300 cursor-default',
+                  'relative aspect-square rounded-xl flex flex-col items-center justify-center text-sm transition-all',
+                  isSelected && 'bg-gradient-to-br from-gold-500 to-gold-600 text-surface-0 shadow-lg shadow-gold-500/30',
+                  !isSelected && isTodayDate && 'text-gold-400 font-bold',
+                  !isSelected && !isTodayDate && !isFuture && 'text-ink-2 hover:bg-surface-4/40',
+                  isFuture && 'text-surface-5 cursor-default',
                 )}
               >
-                {day}
+                <span className="font-mono text-xs">{day}</span>
                 {hasMeal && !isSelected && (
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-sage-400" />
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold-500" />
                 )}
                 {isTodayDate && !isSelected && (
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-sage-400" />
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold-500" />
                 )}
               </motion.button>
             )

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meal-planner-v1'
+const CACHE_NAME = 'meal-planner-v2'
 const ASSETS = [
   '/',
   '/index.html',
@@ -23,14 +23,12 @@ self.addEventListener('activate', (event) => {
   self.clients.claim()
 })
 
-// Fetch: cache-first for static, network-first for API
+// Fetch: stale-while-revalidate for static, network-first for API
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return
 
-  // For API calls: network first, fallback to nothing
-  if (event.request.url.includes('api.deepseek.com')) {
-    return // Don't cache API calls
-  }
+  // Don't cache API calls
+  if (event.request.url.includes('api.deepseek.com')) return
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
@@ -40,7 +38,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
         }
         return response
-      })
+      }).catch(() => cached) // offline fallback
       return cached || fetchPromise
     }),
   )

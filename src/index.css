@@ -13,29 +13,30 @@
     @apply bg-warm-50 text-warm-800;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .dark body,
+  html.dark body {
+    @apply bg-warm-900 text-warm-100;
+  }
+
+  html.dark {
+    @apply bg-warm-900;
   }
 
   ::selection {
     @apply bg-sage-200 text-sage-900;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  .dark ::selection {
+    @apply bg-sage-700 text-sage-100;
   }
 
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-warm-300 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-warm-400;
-  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-warm-300 dark:bg-warm-600 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-warm-400 dark:bg-warm-500; }
 }
 
 @layer components {
@@ -43,43 +44,44 @@
     @apply bg-white/70 backdrop-blur-xl border border-white/60 shadow-sm;
   }
 
+  .dark .glass {
+    @apply bg-warm-800/50 border-warm-700/40;
+  }
+
   .glass-hover {
     @apply transition-all duration-300 hover:bg-white/85 hover:shadow-md hover:border-warm-200;
+  }
+
+  .dark .glass-hover {
+    @apply hover:bg-warm-700/60 hover:border-warm-600;
   }
 
   .card-ring {
     @apply ring-1 ring-warm-200/50;
   }
+
+  .dark .card-ring {
+    @apply ring-warm-700/50;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  .text-balance { text-wrap: balance; }
 }
 
-/* Sparkle animation */
 @keyframes sparkle {
-  0% {
-    transform: scale(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) rotate(180deg);
-    opacity: 0;
-  }
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1) rotate(180deg); opacity: 0; }
 }
 
-.sparkle-particle {
-  animation: sparkle 0.8s ease-out forwards;
-}
+.sparkle-particle { animation: sparkle 0.8s ease-out forwards; }
 
-/* Gradient text */
 .gradient-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-sage-600 to-emerald-500;
 }
 
-/* Magnetic area */
-.magnetic-area {
-  transition: transform 0.1s ease-out;
+.dark .gradient-text {
+  @apply bg-gradient-to-r from-sage-400 to-emerald-400;
 }
+
+.magnetic-area { transition: transform 0.1s ease-out; }

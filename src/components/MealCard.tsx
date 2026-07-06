@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion'
-import { Heart, ChevronDown, Coffee, Soup, Sun, ShoppingBasket, ChefHat, Lightbulb, Banknote, Wheat, RefreshCw, Check } from 'lucide-react'
+import { Heart, ChevronDown, Coffee, Soup, Sun, ShoppingBasket, ChefHat, Lightbulb, Banknote, Wheat, RefreshCw, Check, Clock } from 'lucide-react'
 import { cn } from '../lib/utils'
 import type { Meal } from '../types'
 import { isFavorite, addFavorite, removeFavorite, isMealCooked, toggleMealCooked } from '../lib/storage'
@@ -13,22 +13,12 @@ interface MealCardProps {
   regenerating?: boolean
 }
 
-const mealIcons = {
-  breakfast: Coffee,
-  lunch: Sun,
-  dinner: Soup,
-}
-
-const mealLabels = {
-  breakfast: '早餐',
-  lunch: '午餐',
-  dinner: '晚餐',
-}
-
+const mealIcons = { breakfast: Coffee, lunch: Sun, dinner: Soup }
+const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐' }
 const mealColors = {
-  breakfast: { bg: 'bg-amber-100', text: 'text-amber-600', badge: 'bg-amber-100 text-amber-700', glow: 'rgba(251, 191, 36, 0.25)' },
-  lunch: { bg: 'bg-orange-100', text: 'text-orange-600', badge: 'bg-orange-100 text-orange-700', glow: 'rgba(251, 146, 60, 0.25)' },
-  dinner: { bg: 'bg-sage-100', text: 'text-sage-600', badge: 'bg-sage-100 text-sage-700', glow: 'rgba(101, 147, 104, 0.3)' },
+  breakfast: { bg: 'bg-amber-100 dark:bg-amber-900/40', text: 'text-amber-600 dark:text-amber-400', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400', glow: 'rgba(251, 191, 36, 0.25)' },
+  lunch: { bg: 'bg-orange-100 dark:bg-orange-900/40', text: 'text-orange-600 dark:text-orange-400', badge: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400', glow: 'rgba(251, 146, 60, 0.25)' },
+  dinner: { bg: 'bg-sage-100 dark:bg-sage-900/40', text: 'text-sage-600 dark:text-sage-400', badge: 'bg-sage-100 text-sage-700 dark:bg-sage-900/40 dark:text-sage-400', glow: 'rgba(101, 147, 104, 0.3)' },
 }
 
 export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCardProps) {
@@ -37,45 +27,27 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
   const [heartAnim, setHeartAnim] = useState(false)
   const [cooked, setCooked] = useState(() => isMealCooked(meal.id))
 
-  // Animated budget counter
   const costMotion = useMotionValue(0)
   const costSpring = useSpring(costMotion, { stiffness: 80, damping: 15 })
   const [displayCost, setDisplayCost] = useState(0)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      costMotion.set(meal.estimatedCost)
-    }, 300 + index * 200)
+    const timer = setTimeout(() => { costMotion.set(meal.estimatedCost) }, 300 + index * 200)
     const unsub = costSpring.on('change', (v) => setDisplayCost(Math.round(v * 10) / 10))
-    return () => {
-      costMotion.set(0)
-      clearTimeout(timer)
-      unsub()
-    }
+    return () => { costMotion.set(0); clearTimeout(timer); unsub() }
   }, [meal.estimatedCost, index, costMotion, costSpring])
 
-  // Sync faved state when meal changes
   useEffect(() => {
     setFaved(isFavorite(meal))
     setCooked(isMealCooked(meal.id))
   }, [meal])
 
   const toggleFav = () => {
-    if (faved) {
-      removeFavorite(meal)
-      setFaved(false)
-    } else {
-      addFavorite(meal)
-      setFaved(true)
-      setHeartAnim(true)
-      setTimeout(() => setHeartAnim(false), 600)
-    }
+    if (faved) { removeFavorite(meal); setFaved(false) }
+    else { addFavorite(meal); setFaved(true); setHeartAnim(true); setTimeout(() => setHeartAnim(false), 600) }
   }
 
-  const toggleCooked = () => {
-    toggleMealCooked(meal.id)
-    setCooked(!cooked)
-  }
+  const toggleCooked = () => { toggleMealCooked(meal.id); setCooked(!cooked) }
 
   const Icon = mealIcons[meal.type]
   const colors = mealColors[meal.type]
@@ -85,105 +57,59 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
     <motion.div
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.15,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
+      transition={{ duration: 0.5, delay: index * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <TiltCard glowColor={colors.glow}>
-        <div className="glass card-ring rounded-2xl overflow-hidden">
+        <div className="glass card-ring rounded-2xl overflow-hidden dark:bg-warm-800/50 dark:border-warm-700/40">
           {/* Header */}
           <div className="p-5 pb-3">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
                 <motion.div
-                  className={cn(
-                    'w-10 h-10 rounded-xl flex items-center justify-center shrink-0',
-                    colors.bg, colors.text,
-                  )}
+                  className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', colors.bg, colors.text)}
                   whileHover={{ rotate: [0, -8, 8, -4, 0], scale: 1.1 }}
                   transition={{ duration: 0.4 }}
                 >
                   <Icon size={20} />
                 </motion.div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-warm-800 truncate">{meal.name}</h3>
-                  <div className="flex items-center gap-2 mt-0.5">
+                  <h3 className="font-semibold text-warm-800 dark:text-warm-100 truncate">{meal.name}</h3>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', colors.badge)}>
                       {mealLabels[meal.type]}
                     </span>
-                    <span className="text-xs text-warm-400 flex items-center gap-0.5">
+                    <span className="text-xs text-warm-400 dark:text-warm-500 flex items-center gap-0.5">
                       <Banknote size={11} />
-                      <motion.span className="tabular-nums">{displayCost.toFixed(1)}</motion.span>
-                      元
+                      <motion.span className="tabular-nums">{displayCost.toFixed(1)}</motion.span>元
                     </span>
+                    {meal.cookingTime && (
+                      <span className="text-xs text-warm-400 dark:text-warm-500 flex items-center gap-0.5">
+                        <Clock size={11} />
+                        {meal.cookingTime}分钟
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-1 shrink-0">
-                {/* Cooked toggle */}
-                <motion.button
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.85 }}
-                  onClick={toggleCooked}
-                  className="relative"
-                  title={cooked ? '标记为未做' : '标记为做过'}
-                >
-                  <Check
-                    size={19}
-                    className={cn(
-                      'transition-colors duration-200',
-                      cooked ? 'text-sage-500 fill-sage-100' : 'text-warm-300 hover:text-sage-400',
-                    )}
-                  />
+                <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={toggleCooked} title={cooked ? '标记为未做' : '标记为做过'}>
+                  <Check size={19} className={cn('transition-colors duration-200', cooked ? 'text-sage-500 fill-sage-100 dark:text-sage-400' : 'text-warm-300 hover:text-sage-400')} />
                 </motion.button>
-
-                {/* Favorite */}
-                <motion.button
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.85 }}
-                  onClick={toggleFav}
-                  className="relative"
-                >
-                  <Heart
-                    size={21}
-                    className={cn(
-                      'transition-colors duration-200',
-                      faved ? 'fill-red-400 text-red-400' : 'text-warm-300 hover:text-red-300',
-                    )}
-                  />
-                  {heartAnim && (
-                    <>
-                      {[...Array(6)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-red-400"
-                          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                          animate={{
-                            x: (Math.random() - 0.5) * 40,
-                            y: (Math.random() - 0.5) * 40,
-                            opacity: 0,
-                            scale: 0,
-                          }}
-                          transition={{ duration: 0.5, ease: 'easeOut' }}
-                        />
-                      ))}
-                    </>
-                  )}
+                <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={toggleFav} className="relative">
+                  <Heart size={21} className={cn('transition-colors duration-200', faved ? 'fill-red-400 text-red-400' : 'text-warm-300 hover:text-red-300')} />
+                  {heartAnim && (<>
+                    {[...Array(6)].map((_, i) => (
+                      <motion.div key={i} className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-red-400"
+                        initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                        animate={{ x: (Math.random() - 0.5) * 40, y: (Math.random() - 0.5) * 40, opacity: 0, scale: 0 }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }} />
+                    ))}
+                  </>)}
                 </motion.button>
-
-                {/* Regenerate */}
                 {onRegenerate && (
-                  <motion.button
-                    whileHover={{ scale: 1.15 }}
-                    whileTap={{ scale: 0.85 }}
-                    onClick={onRegenerate}
-                    disabled={regenerating}
-                    className={cn(regenerating && 'animate-spin')}
-                    title="重新生成这道菜"
-                  >
+                  <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={onRegenerate} disabled={regenerating}
+                    className={cn(regenerating && 'animate-spin')} title="重新生成这道菜">
                     <RefreshCw size={17} className={cn('text-warm-300 hover:text-sage-500 transition-colors', regenerating && 'text-sage-500')} />
                   </motion.button>
                 )}
@@ -191,55 +117,37 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
             </div>
           </div>
 
-          {/* Staple food badge */}
+          {/* Staple */}
           {meal.staple && (
             <div className="px-5 pb-2">
-              <motion.div
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200/60"
-                whileHover={{ scale: 1.03 }}
-              >
-                <motion.span
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
+              <motion.div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-700/40" whileHover={{ scale: 1.03 }}>
+                <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
                   <Wheat size={13} className="text-amber-500" />
                 </motion.span>
-                <span className="text-xs font-medium text-amber-700">{meal.staple.name}</span>
-                <span className="text-xs text-amber-500">{meal.staple.amount}</span>
+                <span className="text-xs font-medium text-amber-700 dark:text-amber-400">{meal.staple.name}</span>
+                <span className="text-xs text-amber-500 dark:text-amber-500">{meal.staple.amount}</span>
               </motion.div>
             </div>
           )}
 
-          {/* Dinner: show each dish separately */}
+          {/* Dishes or ingredients */}
           {hasDishes ? (
             <div className="px-5 pb-2 space-y-3">
               {meal.dishes!.map((dish, di) => (
-                <motion.div
-                  key={dish.name}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.15 + di * 0.1 }}
-                  whileHover={{ x: 2 }}
-                  className="p-3 rounded-xl bg-warm-50/80 border border-warm-200/40"
-                >
+                <motion.div key={dish.name} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + index * 0.15 + di * 0.1 }} whileHover={{ x: 2 }}
+                  className="p-3 rounded-xl bg-warm-50/80 dark:bg-warm-700/30 border border-warm-200/40 dark:border-warm-600/30">
                   <div className="flex items-center gap-1.5 mb-2">
                     <ChefHat size={13} className="text-sage-500" />
-                    <span className="text-sm font-semibold text-warm-700">
+                    <span className="text-sm font-semibold text-warm-700 dark:text-warm-200">
                       {meal.dishes!.length > 1 ? `菜${di + 1}：` : ''}{dish.name}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {dish.ingredients.map((ing, ii) => (
-                      <motion.span
-                        key={ing.name}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.4 + index * 0.15 + di * 0.1 + ii * 0.04 }}
-                        whileHover={{ scale: 1.05, y: -1 }}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white border border-warm-200/60 text-xs text-warm-600 cursor-default"
-                      >
+                    {dish.ingredients.map((ing) => (
+                      <motion.span key={ing.name} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} whileHover={{ scale: 1.05, y: -1 }}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white dark:bg-warm-700 border border-warm-200/60 dark:border-warm-600/40 text-xs text-warm-600 dark:text-warm-300 cursor-default">
                         <span className="font-medium">{ing.name}</span>
-                        <span className="text-warm-400">{ing.amount}</span>
+                        <span className="text-warm-400 dark:text-warm-500">{ing.amount}</span>
                       </motion.span>
                     ))}
                   </div>
@@ -247,24 +155,17 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
               ))}
             </div>
           ) : (
-            /* Breakfast / Lunch: show ingredients */
             <div className="px-5 pb-2">
               <div className="flex items-center gap-1.5 mb-2">
                 <ShoppingBasket size={14} className="text-warm-400" />
-                <span className="text-xs font-medium text-warm-500">食材清单</span>
+                <span className="text-xs font-medium text-warm-500 dark:text-warm-400">食材清单</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {meal.ingredients.map((ing, i) => (
-                  <motion.span
-                    key={ing.name}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4 + index * 0.15 + i * 0.05 }}
-                    whileHover={{ scale: 1.05, y: -1 }}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-warm-50 border border-warm-200/60 text-xs text-warm-600 cursor-default"
-                  >
+                  <motion.span key={ing.name} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 + index * 0.15 + i * 0.05 }} whileHover={{ scale: 1.05, y: -1 }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-warm-50 dark:bg-warm-700/50 border border-warm-200/60 dark:border-warm-600/40 text-xs text-warm-600 dark:text-warm-300 cursor-default">
                     <span className="font-medium">{ing.name}</span>
-                    <span className="text-warm-400">{ing.amount}</span>
+                    <span className="text-warm-400 dark:text-warm-500">{ing.amount}</span>
                   </motion.span>
                 ))}
               </div>
@@ -274,30 +175,19 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
           {/* Expandable instructions */}
           <AnimatePresence>
             {expanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="overflow-hidden"
-              >
-                <div className="px-5 pt-2 pb-4 space-y-4 border-t border-warm-100 mt-1">
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }} className="overflow-hidden">
+                <div className="px-5 pt-2 pb-4 space-y-4 border-t border-warm-100 dark:border-warm-700 mt-1">
                   {hasDishes ? (
                     meal.dishes!.map((dish, di) => (
                       <div key={dish.name}>
                         <div className="flex items-center gap-1.5 mb-2">
                           <ChefHat size={14} className="text-sage-500" />
-                          <span className="text-xs font-semibold text-warm-600">{dish.name} — 做法</span>
+                          <span className="text-xs font-semibold text-warm-600 dark:text-warm-300">{dish.name} — 做法</span>
                         </div>
                         <ol className="space-y-1.5 ml-5">
                           {dish.instructions.map((step, si) => (
-                            <motion.li
-                              key={si}
-                              initial={{ opacity: 0, x: -8 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: di * 0.12 + si * 0.06 }}
-                              className="flex gap-2 text-sm text-warm-600"
-                            >
+                            <motion.li key={si} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: di * 0.12 + si * 0.06 }}
+                              className="flex gap-2 text-sm text-warm-600 dark:text-warm-300">
                               <span className="font-semibold text-sage-500 shrink-0 w-5 text-right">{si + 1}.</span>
                               <span>{step}</span>
                             </motion.li>
@@ -309,17 +199,12 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
                     <div>
                       <div className="flex items-center gap-1.5 mb-2">
                         <ChefHat size={14} className="text-warm-400" />
-                        <span className="text-xs font-medium text-warm-500">做法</span>
+                        <span className="text-xs font-medium text-warm-500 dark:text-warm-400">做法</span>
                       </div>
                       <ol className="space-y-1.5">
                         {meal.instructions.map((step, i) => (
-                          <motion.li
-                            key={i}
-                            initial={{ opacity: 0, x: -8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.08 }}
-                            className="flex gap-2 text-sm text-warm-600"
-                          >
+                          <motion.li key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
+                            className="flex gap-2 text-sm text-warm-600 dark:text-warm-300">
                             <span className="font-semibold text-sage-500 shrink-0 w-5 text-right">{i + 1}.</span>
                             <span>{step}</span>
                           </motion.li>
@@ -327,16 +212,11 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
                       </ol>
                     </div>
                   )}
-
                   {meal.tips && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-100"
-                    >
+                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                      className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/40">
                       <Lightbulb size={15} className="text-amber-500 shrink-0 mt-0.5" />
-                      <p className="text-sm text-amber-700">{meal.tips}</p>
+                      <p className="text-sm text-amber-700 dark:text-amber-400">{meal.tips}</p>
                     </motion.div>
                   )}
                 </div>
@@ -344,17 +224,10 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
             )}
           </AnimatePresence>
 
-          {/* Expand toggle */}
-          <motion.button
-            onClick={() => setExpanded(!expanded)}
-            whileHover={{ backgroundColor: 'rgba(245, 245, 244, 0.5)' }}
-            className="w-full py-2.5 flex items-center justify-center gap-1 text-xs text-warm-400 hover:text-warm-600 transition-colors"
-          >
+          <motion.button onClick={() => setExpanded(!expanded)} whileHover={{ backgroundColor: 'rgba(245,245,244,0.5)' }}
+            className="w-full py-2.5 flex items-center justify-center gap-1 text-xs text-warm-400 hover:text-warm-600 dark:hover:text-warm-300 transition-colors">
             {expanded ? '收起做法' : '查看做法'}
-            <motion.span
-              animate={{ rotate: expanded ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown size={14} />
             </motion.span>
           </motion.button>

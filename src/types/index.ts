@@ -22,8 +22,9 @@ export interface Meal {
   instructions: string[]
   estimatedCost: number
   tips: string
-  dishes?: MealDish[]     // 晚餐多道菜
-  staple?: MealStaple     // 主食
+  dishes?: MealDish[]
+  staple?: MealStaple
+  cookingTime?: number // minutes (feature 11)
 }
 
 export interface DailyMealPlan {
@@ -47,4 +48,13 @@ export interface UserSettings {
   foodRestrictions: string
   breakfastBudget: string
   dinnerBudget: string
+  servings: number      // feature 6: 用餐人数
+  darkMode: boolean     // feature 12: 暗色模式
+}
+
+export interface ShoppingItem {
+  name: string
+  amount: string
+  source: string // meal name
+  checked: boolean
 }

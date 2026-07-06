@@ -4,6 +4,7 @@ const MEAL_PLANS_KEY = 'mealPlanner_mealPlans'
 const FAVORITES_KEY = 'mealPlanner_favorites'
 const COOKED_KEY = 'mealPlanner_cooked'
 const SETTINGS_KEY = 'mealPlanner_settings'
+const LAST_BACKUP_KEY = 'mealPlanner_lastBackup'
 
 // --- Default Settings ---
 
@@ -16,6 +17,8 @@ const DEFAULT_SETTINGS: UserSettings = {
 - 优先使用：猪肉、鸡肉、牛肉、鸡蛋、豆腐、蔬菜、菌菇等家常食材`,
   breakfastBudget: '10-15',
   dinnerBudget: '10-15',
+  servings: 2,
+  darkMode: false,
 }
 
 // --- Meal Plans ---
@@ -37,7 +40,7 @@ export function getMealPlansByDate(dateStr: string): DailyMealPlan[] {
 
 export function getMealPlanByDate(dateStr: string): DailyMealPlan | undefined {
   const plans = getMealPlansByDate(dateStr)
-  return plans[0] // latest plan
+  return plans[0]
 }
 
 export function saveMealPlan(plan: DailyMealPlan): void {
@@ -64,6 +67,35 @@ export function getAllPlanDates(): Set<string> {
   return new Set(getMealPlans().map((p) => p.date))
 }
 
+/** Feature 1: 最近 N 个不同日期的菜谱 (去重) */
+export function getRecentPlans(n: number = 5): DailyMealPlan[] {
+  const plans = getMealPlans().sort((a, b) => b.date.localeCompare(a.date))
+  const seen = new Set<string>()
+  const result: DailyMealPlan[] = []
+  for (const plan of plans) {
+    if (!seen.has(plan.date)) {
+      seen.add(plan.date)
+      result.push(plan)
+      if (result.length >= n) break
+    }
+  }
+  return result
+}
+
+/** Feature 4: 获取日期范围内的菜谱 (周视图) */
+export function getPlansInRange(startDate: string, endDate: string): Map<string, DailyMealPlan> {
+  const plans = getMealPlans()
+  const map = new Map<string, DailyMealPlan>()
+  for (const plan of plans) {
+    if (plan.date >= startDate && plan.date <= endDate) {
+      if (!map.has(plan.date) || plan.createdAt > map.get(plan.date)!.createdAt) {
+        map.set(plan.date, plan)
+      }
+    }
+  }
+  return map
+}
+
 // --- Favorites ---
 
 export function getFavorites(): FavoriteMeal[] {
@@ -82,11 +114,7 @@ export function isFavorite(meal: Meal): boolean {
 export function addFavorite(meal: Meal): void {
   if (isFavorite(meal)) return
   const favs = getFavorites()
-  favs.push({
-    id: meal.id,
-    meal,
-    addedAt: new Date().toISOString(),
-  })
+  favs.push({ id: meal.id, meal, addedAt: new Date().toISOString() })
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs))
 }
 
@@ -95,7 +123,7 @@ export function removeFavorite(meal: Meal): void {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs))
 }
 
-// --- Cooked Meals (individual meal tracking) ---
+// --- Cooked Meals ---
 
 export function getCookedMeals(): Set<string> {
   try {
@@ -112,11 +140,8 @@ export function isMealCooked(mealId: string): boolean {
 
 export function toggleMealCooked(mealId: string): void {
   const cooked = getCookedMeals()
-  if (cooked.has(mealId)) {
-    cooked.delete(mealId)
-  } else {
-    cooked.add(mealId)
-  }
+  if (cooked.has(mealId)) cooked.delete(mealId)
+  else cooked.add(mealId)
   localStorage.setItem(COOKED_KEY, JSON.stringify([...cooked]))
 }
 
@@ -125,17 +150,30 @@ export function toggleMealCooked(mealId: string): void {
 export function getSettings(): UserSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY)
-    if (raw) {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) }
-    }
-  } catch {
-    // ignore
-  }
+    if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) }
+  } catch { /* ignore */ }
   return { ...DEFAULT_SETTINGS }
 }
 
 export function saveSettings(settings: UserSettings): void {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
+}
+
+// --- Auto Backup Reminder (Feature 9) ---
+
+export function getLastBackupTime(): string | null {
+  return localStorage.getItem(LAST_BACKUP_KEY)
+}
+
+export function setLastBackupTime(): void {
+  localStorage.setItem(LAST_BACKUP_KEY, new Date().toISOString())
+}
+
+export function shouldRemindBackup(): boolean {
+  const last = getLastBackupTime()
+  if (!last) return getMealPlans().length > 5
+  const daysSince = (Date.now() - new Date(last).getTime()) / (1000 * 60 * 60 * 24)
+  return daysSince >= 7 && getMealPlans().length > 5
 }
 
 // --- Export / Import ---
@@ -153,16 +191,8 @@ export function exportAllData(): string {
 
 export function importAllData(jsonStr: string): void {
   const data = JSON.parse(jsonStr)
-  if (data.mealPlans) {
-    localStorage.setItem(MEAL_PLANS_KEY, JSON.stringify(data.mealPlans))
-  }
-  if (data.favorites) {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(data.favorites))
-  }
-  if (data.cooked) {
-    localStorage.setItem(COOKED_KEY, JSON.stringify(data.cooked))
-  }
-  if (data.settings) {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(data.settings))
-  }
+  if (data.mealPlans) localStorage.setItem(MEAL_PLANS_KEY, JSON.stringify(data.mealPlans))
+  if (data.favorites) localStorage.setItem(FAVORITES_KEY, JSON.stringify(data.favorites))
+  if (data.cooked) localStorage.setItem(COOKED_KEY, JSON.stringify(data.cooked))
+  if (data.settings) localStorage.setItem(SETTINGS_KEY, JSON.stringify(data.settings))
 }

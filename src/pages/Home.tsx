@@ -5,11 +5,10 @@ import { MealCard } from '../components/MealCard'
 import { GenerateButton } from '../components/GenerateButton'
 import { EmptyState } from '../components/EmptyState'
 import { TiltCard } from '../components/TiltCard'
-import { Confetti } from '../components/Confetti'
 import { formatDate, formatDisplayDate, isToday } from '../lib/utils'
 import { generateDailyMeals, generateBreakfast, generateLunch, generateDinner } from '../lib/api'
 import { getMealPlanByDate, saveMealPlan, getAllPlanDates } from '../lib/storage'
-import type { DailyMealPlan, Meal } from '../types'
+import type { DailyMealPlan } from '../types'
 import { ChefHat, AlertCircle, Sparkles } from 'lucide-react'
 
 export function Home() {
@@ -20,7 +19,6 @@ export function Home() {
   const [loadingMeal, setLoadingMeal] = useState<'breakfast' | 'lunch' | 'dinner' | null>(null)
   const [error, setError] = useState('')
   const [markedDates, setMarkedDates] = useState<Set<string>>(new Set())
-  const [showConfetti, setShowConfetti] = useState(false)
 
   useEffect(() => {
     setMarkedDates(getAllPlanDates())
@@ -51,8 +49,6 @@ export function Home() {
       saveMealPlan(newPlan)
       setPlan(newPlan)
       setMarkedDates(getAllPlanDates())
-      setShowConfetti(true)
-      setTimeout(() => setShowConfetti(false), 3000)
     } catch (err) {
       const msg = err instanceof Error ? err.message : '生成失败，请稍后重试'
       setError(msg)
@@ -94,7 +90,6 @@ export function Home() {
 
   return (
     <div className="max-w-lg mx-auto px-5 pb-16">
-      <Confetti active={showConfetti} />
       {/* Hero title with gradient text */}
       <motion.div
         initial={{ opacity: 0, y: -15 }}
@@ -213,7 +208,6 @@ export function Home() {
                 transition={{ delay: i * 0.1 }}
                 className="glass card-ring rounded-2xl p-6"
               >
-                {/* Shimmer skeleton */}
                 <div className="relative overflow-hidden">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-warm-100 to-warm-200 animate-pulse-soft" />

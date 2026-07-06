@@ -19,7 +19,7 @@ export function EmptyState({ icon, title, description, className }: EmptyStatePr
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        className="mb-5 text-surface-5"
+        className="mb-5 text-ink-4"
       >
         {icon}
       </motion.div>

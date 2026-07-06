@@ -80,7 +80,7 @@ export function WeeklyView() {
                 className={cn('card p-3', isTodayDate && 'border-gold-500/30')}>
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className={cn('text-[10px] font-bold uppercase px-2 py-0.5 rounded-md',
-                    isTodayDate ? 'bg-gold-500/15 text-gold-400' : 'bg-surface-4/60 text-ink-3')}>
+                    isTodayDate ? 'bg-gold-500/15 text-gold-500' : 'bg-surface-3/60 text-ink-3')}>
                     {weekDays[i]}
                   </span>
                   <span className="text-xs text-ink-4 font-mono">{formatShortDate(dateStr)}</span>
@@ -88,11 +88,11 @@ export function WeeklyView() {
                 {plan ? (
                   <div className="space-y-1">
                     <div className="flex items-center gap-1.5 text-xs text-ink-2">
-                      <Coffee size={11} className="text-gold-400" /><span className="truncate">{plan.breakfast.name}</span>
+                      <Coffee size={11} className="text-gold-500" /><span className="truncate">{plan.breakfast.name}</span>
                     </div>
                     {plan.lunch && (
                       <div className="flex items-center gap-1.5 text-xs text-ink-2">
-                        <Sun size={11} className="text-neon-400" /><span className="truncate">{plan.lunch.name}</span>
+                        <Sun size={11} className="text-neon-500" /><span className="truncate">{plan.lunch.name}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1.5 text-xs text-ink-2">
@@ -100,7 +100,7 @@ export function WeeklyView() {
                     </div>
                   </div>
                 ) : (
-                  <span className="text-xs text-surface-5">暂无菜谱</span>
+                  <span className="text-xs text-ink-4">暂无菜谱</span>
                 )}
               </motion.div>
             )
@@ -113,7 +113,7 @@ export function WeeklyView() {
       {stats.totalMeals > 0 && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-4">
           <h2 className="text-lg font-bold text-ink-1 flex items-center gap-2">
-            <BarChart3 size={18} className="text-gold-400" />饮食统计
+            <BarChart3 size={18} className="text-gold-500" />饮食统计
           </h2>
 
           {stats.topIngredients.length > 0 && (
@@ -140,7 +140,7 @@ export function WeeklyView() {
               <div className="flex flex-wrap gap-2">
                 {stats.proteinBreakdown.map(([name, count]) => (
                   <div key={name} className="px-3 py-1.5 rounded-lg bg-neon-500/10 border border-neon-500/20">
-                    <span className="text-xs font-medium text-neon-400">{name}</span>
+                    <span className="text-xs font-medium text-neon-500">{name}</span>
                     <span className="text-xs text-ink-4 ml-1 font-mono">{count}次</span>
                   </div>
                 ))}

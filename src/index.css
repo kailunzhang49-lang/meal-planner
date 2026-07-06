@@ -9,7 +9,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    color-scheme: dark;
   }
 
   body {
@@ -19,7 +18,7 @@
   }
 
   ::selection {
-    @apply bg-gold-500/30 text-gold-300;
+    @apply bg-gold-300/40 text-ink-1;
   }
 
   ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -30,7 +29,7 @@
 
 @layer components {
   .card {
-    @apply bg-surface-2/80 backdrop-blur-xl border border-surface-4/60 rounded-2xl;
+    @apply bg-white/80 backdrop-blur-xl border border-surface-3/80 rounded-2xl shadow-sm;
   }
 
   .card-glow {
@@ -45,7 +44,7 @@
     inset: -1px;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(232,168,56,0.3), transparent 40%, transparent 60%, rgba(99,102,241,0.2));
+    background: linear-gradient(135deg, rgba(217,119,6,0.25), transparent 40%, transparent 60%, rgba(99,102,241,0.15));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -54,15 +53,15 @@
   }
 
   .glass {
-    @apply bg-surface-2/60 backdrop-blur-xl border border-surface-4/40;
+    @apply bg-white/60 backdrop-blur-xl border border-surface-3/60 shadow-sm;
   }
 
   .glass-nav {
-    @apply bg-surface-2/80 backdrop-blur-2xl border border-surface-4/50;
+    @apply bg-white/80 backdrop-blur-2xl border border-surface-3/70 shadow-lg shadow-black/5;
   }
 
   .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-gold-300 to-gold-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-gold-500 to-gold-600;
   }
 
   .text-gradient-neon {
@@ -70,15 +69,15 @@
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-gold-500 to-gold-600 text-surface-0 font-semibold rounded-xl shadow-lg shadow-gold-500/20 hover:shadow-gold-500/40 transition-all duration-300;
+    @apply bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold rounded-xl shadow-md shadow-gold-400/25 hover:shadow-gold-400/40 transition-all duration-300;
   }
 
   .btn-ghost {
-    @apply bg-surface-3/50 border border-surface-4/50 text-ink-2 rounded-xl hover:bg-surface-4/50 hover:border-surface-5/50 transition-all duration-200;
+    @apply bg-white/70 border border-surface-3/70 text-ink-2 rounded-xl hover:bg-white hover:border-surface-4/60 transition-all duration-200;
   }
 
   .tag {
-    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-3/80 border border-surface-4/50 text-xs text-ink-2;
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-2/80 border border-surface-3/60 text-xs text-ink-2;
   }
 
   .mono {
@@ -90,10 +89,9 @@
   .text-balance { text-wrap: balance; }
 }
 
-/* Orb glow keyframes */
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
 }
 
 @keyframes orb-ring {
@@ -110,10 +108,9 @@
 
 .scan-line {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(232,168,56,0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(217,119,6,0.5), transparent);
   animation: scan-line 2s ease-in-out infinite;
   pointer-events: none;
 }

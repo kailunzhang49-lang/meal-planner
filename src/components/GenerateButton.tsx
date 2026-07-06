@@ -43,7 +43,7 @@ export function GenerateButton({ onClick, loading, disabled }: GenerateButtonPro
         disabled={loading || disabled}
         className={cn(
           'relative overflow-hidden px-8 py-3.5 rounded-2xl font-semibold text-base',
-          'bg-gradient-to-r from-gold-500 to-gold-600 text-surface-0',
+          'bg-gradient-to-r from-gold-500 to-gold-600 text-white',
           'shadow-lg shadow-gold-500/25',
           'hover:shadow-gold-500/50 active:shadow-gold-500/60',
           'transition-shadow duration-300',

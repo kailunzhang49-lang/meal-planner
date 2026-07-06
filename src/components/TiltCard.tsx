@@ -8,7 +8,7 @@ interface TiltCardProps {
   glowColor?: string
 }
 
-export function TiltCard({ children, className, glowColor = 'rgba(232, 168, 56, 0.3)' }: TiltCardProps) {
+export function TiltCard({ children, className, glowColor = 'rgba(217, 119, 6, 0.15)' }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -50,7 +50,7 @@ export function TiltCard({ children, className, glowColor = 'rgba(232, 168, 56, 
           <motion.div
             className="absolute inset-0"
             style={{
-              background: 'linear-gradient(105deg, transparent 40%, rgba(232,168,56,0.12) 45%, rgba(232,168,56,0.18) 50%, transparent 55%)',
+              background: 'linear-gradient(105deg, transparent 40%, rgba(217,119,6,0.08) 45%, rgba(217,119,6,0.12) 50%, transparent 55%)',
               x: '-100%',
             }}
             animate={{ x: '200%' }}

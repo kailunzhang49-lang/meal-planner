@@ -16,9 +16,9 @@ interface MealCardProps {
 const mealIcons = { breakfast: Coffee, lunch: Sun, dinner: Soup }
 const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐' }
 const mealColors = {
-  breakfast: { icon: 'bg-gold-500/20 text-gold-400', badge: 'bg-gold-500/20 text-gold-400 border border-gold-500/30' },
-  lunch: { icon: 'bg-neon-500/20 text-neon-400', badge: 'bg-neon-500/20 text-neon-400 border border-neon-500/30' },
-  dinner: { icon: 'bg-gold-700/20 text-gold-500', badge: 'bg-gold-700/20 text-gold-500 border border-gold-700/30' },
+  breakfast: { icon: 'bg-gold-500/15 text-gold-500', badge: 'bg-gold-500/15 text-gold-500 border border-gold-500/30' },
+  lunch: { icon: 'bg-neon-500/15 text-neon-500', badge: 'bg-neon-500/15 text-neon-500 border border-neon-500/30' },
+  dinner: { icon: 'bg-gold-700/15 text-gold-600', badge: 'bg-gold-700/15 text-gold-600 border border-gold-700/30' },
 }
 
 export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCardProps) {
@@ -59,7 +59,7 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, delay: index * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
-      <TiltCard glowColor="rgba(232, 168, 56, 0.25)">
+      <TiltCard glowColor="rgba(217, 119, 6, 0.15)">
         <div className="card-glow overflow-hidden">
           {/* Header */}
           <div className="p-5 pb-3">
@@ -94,13 +94,13 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
 
               <div className="flex items-center gap-1 shrink-0">
                 <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={toggleCooked}>
-                  <Check size={19} className={cn('transition-colors duration-200', cooked ? 'text-sage-400 fill-sage-400/20' : 'text-surface-5 hover:text-sage-400')} />
+                  <Check size={19} className={cn('transition-colors duration-200', cooked ? 'text-sage-500 fill-sage-500/20' : 'text-ink-4 hover:text-sage-500')} />
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={toggleFav} className="relative">
-                  <Heart size={21} className={cn('transition-colors duration-200', faved ? 'fill-gold-400 text-gold-400' : 'text-surface-5 hover:text-gold-400')} />
+                  <Heart size={21} className={cn('transition-colors duration-200', faved ? 'fill-gold-500 text-gold-500' : 'text-ink-4 hover:text-gold-500')} />
                   {heartAnim && (
                     [...Array(6)].map((_, i) => (
-                      <motion.div key={i} className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-gold-400"
+                      <motion.div key={i} className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-gold-500"
                         initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
                         animate={{ x: (Math.random() - 0.5) * 40, y: (Math.random() - 0.5) * 40, opacity: 0, scale: 0 }}
                         transition={{ duration: 0.5, ease: 'easeOut' }} />
@@ -110,7 +110,7 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
                 {onRegenerate && (
                   <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={onRegenerate} disabled={regenerating}
                     className={cn(regenerating && 'animate-spin')}>
-                    <RefreshCw size={17} className={cn('text-surface-5 hover:text-gold-400 transition-colors', regenerating && 'text-gold-400')} />
+                    <RefreshCw size={17} className={cn('text-ink-4 hover:text-gold-500 transition-colors', regenerating && 'text-gold-500')} />
                   </motion.button>
                 )}
               </div>
@@ -122,10 +122,10 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
             <div className="px-5 pb-2">
               <motion.div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gold-500/10 border border-gold-500/20" whileHover={{ scale: 1.03 }}>
                 <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-                  <Wheat size={13} className="text-gold-500" />
+                  <Wheat size={13} className="text-gold-600" />
                 </motion.span>
-                <span className="text-xs font-medium text-gold-400">{meal.staple.name}</span>
-                <span className="text-xs text-gold-600">{meal.staple.amount}</span>
+                <span className="text-xs font-medium text-gold-600">{meal.staple.name}</span>
+                <span className="text-xs text-gold-700">{meal.staple.amount}</span>
               </motion.div>
             </div>
           )}
@@ -135,7 +135,7 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
             <div className="px-5 pb-2 space-y-3">
               {meal.dishes!.map((dish, di) => (
                 <motion.div key={dish.name} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + index * 0.15 + di * 0.1 }} whileHover={{ x: 2 }}
-                  className="p-3 rounded-xl bg-surface-3/60 border border-surface-4/40">
+                  className="p-3 rounded-xl bg-surface-2/60 border border-surface-3/60">
                   <div className="flex items-center gap-1.5 mb-2">
                     <ChefHat size={13} className="text-gold-500" />
                     <span className="text-sm font-semibold text-ink-1">
@@ -157,7 +157,7 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
           ) : (
             <div className="px-5 pb-2">
               <div className="flex items-center gap-1.5 mb-2">
-                <ShoppingBasket size={14} className="text-ink-4" />
+                <ShoppingBasket size={14} className="text-ink-3" />
                 <span className="text-xs font-medium text-ink-3">食材清单</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -176,7 +176,7 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
           <AnimatePresence>
             {expanded && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden">
-                <div className="px-5 pt-2 pb-4 space-y-4 border-t border-surface-4/40 mt-1">
+                <div className="px-5 pt-2 pb-4 space-y-4 border-t border-surface-3/60 mt-1">
                   {hasDishes ? (
                     meal.dishes!.map((dish, di) => (
                       <div key={dish.name}>
@@ -188,7 +188,7 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
                           {dish.instructions.map((step, si) => (
                             <motion.li key={si} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: di * 0.12 + si * 0.06 }}
                               className="flex gap-2 text-sm text-ink-2">
-                              <span className="font-mono font-semibold text-gold-500 shrink-0 w-5 text-right">{si + 1}.</span>
+                              <span className="font-mono font-semibold text-gold-600 shrink-0 w-5 text-right">{si + 1}.</span>
                               <span>{step}</span>
                             </motion.li>
                           ))}
@@ -198,14 +198,14 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
                   ) : (
                     <div>
                       <div className="flex items-center gap-1.5 mb-2">
-                        <ChefHat size={14} className="text-ink-4" />
+                        <ChefHat size={14} className="text-ink-3" />
                         <span className="text-xs font-medium text-ink-3">做法</span>
                       </div>
                       <ol className="space-y-1.5">
                         {meal.instructions.map((step, i) => (
                           <motion.li key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
                             className="flex gap-2 text-sm text-ink-2">
-                            <span className="font-mono font-semibold text-gold-500 shrink-0 w-5 text-right">{i + 1}.</span>
+                            <span className="font-mono font-semibold text-gold-600 shrink-0 w-5 text-right">{i + 1}.</span>
                             <span>{step}</span>
                           </motion.li>
                         ))}
@@ -215,8 +215,8 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
                   {meal.tips && (
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                       className="flex items-start gap-2 p-3 rounded-xl bg-gold-500/10 border border-gold-500/20">
-                      <Lightbulb size={15} className="text-gold-400 shrink-0 mt-0.5" />
-                      <p className="text-sm text-gold-300">{meal.tips}</p>
+                      <Lightbulb size={15} className="text-gold-500 shrink-0 mt-0.5" />
+                      <p className="text-sm text-gold-600">{meal.tips}</p>
                     </motion.div>
                   )}
                 </div>
@@ -224,7 +224,7 @@ export function MealCard({ meal, index = 0, onRegenerate, regenerating }: MealCa
             )}
           </AnimatePresence>
 
-          <motion.button onClick={() => setExpanded(!expanded)} whileHover={{ backgroundColor: 'rgba(30,30,50,0.5)' }}
+          <motion.button onClick={() => setExpanded(!expanded)} whileHover={{ backgroundColor: 'rgba(0,0,0,0.03)' }}
             className="w-full py-2.5 flex items-center justify-center gap-1 text-xs text-ink-4 hover:text-ink-2 transition-colors">
             {expanded ? '收起做法' : '查看做法'}
             <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>

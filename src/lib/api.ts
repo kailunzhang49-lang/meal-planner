@@ -22,7 +22,6 @@ function getServings(): number {
   return getSettings().servings || 2
 }
 
-/** Feature 1: 构建最近菜谱上下文，用于去重 */
 function buildRecentMealsContext(): string {
   const recent = getRecentPlans(5)
   if (recent.length === 0) return ''
@@ -35,7 +34,6 @@ function buildRecentMealsContext(): string {
   return `\n\n【最近${recent.length}天的菜谱 - 请避免重复以下菜式】\n${lines.join('\n')}`
 }
 
-/** Feature 10: 季节上下文 */
 function buildSeasonContext(): string {
   const season = getCurrentSeason()
   const tips: Record<string, string> = {
@@ -56,7 +54,6 @@ function servingsText(): string {
   return s === 2 ? '两个人吃' : `${s}个人吃，请相应调整食材用量和预算`
 }
 
-/** 早餐 */
 export async function generateBreakfast(dateStr: string, onToken?: (t: string) => void): Promise<Meal> {
   const budget = getBudget('breakfast')
   const prompt = `你是一位生活在辽宁大连的家庭厨师，擅长做少油清爽的家常菜。
@@ -86,7 +83,6 @@ ${getFoodRestrictions()}${buildCommonContext()}
   return callAPI(prompt, 'breakfast', onToken)
 }
 
-/** 午餐 */
 export async function generateLunch(dateStr: string, onToken?: (t: string) => void): Promise<Meal> {
   const budget = getBudget('dinner')
   const prompt = `你是一位生活在辽宁大连的家庭厨师，擅长做少油清爽的家常菜。
@@ -116,7 +112,6 @@ ${getFoodRestrictions()}${buildCommonContext()}
   return callAPI(prompt, 'lunch', onToken)
 }
 
-/** 晚餐 */
 export async function generateDinner(dateStr: string, onToken?: (t: string) => void): Promise<Meal> {
   const budget = getBudget('dinner')
   const prompt = `你是一位生活在辽宁大连的家庭厨师，擅长做少油清爽的家常菜。
@@ -149,7 +144,6 @@ ${getFoodRestrictions()}${buildCommonContext()}
   return callAPI(prompt, 'dinner', onToken)
 }
 
-/** Feature 7: 流式输出 + 普通输出 */
 async function callAPI(
   prompt: string,
   type: 'breakfast' | 'lunch' | 'dinner',
@@ -216,7 +210,6 @@ async function callAPI(
       content = data.choices[0].message.content
     }
 
-    // Parse JSON from response
     const jsonMatch = content.match(/\{[\s\S]*\}/)
     if (!jsonMatch) throw new Error('无法解析 AI 返回的菜谱数据')
 
@@ -247,28 +240,27 @@ async function callAPI(
   }
 }
 
-/** 流式生成三餐 (sequential, each card appears as completed) */
+/** 流式生成三餐 - 不再将 onProgress 传给 generate 函数，避免显示原始 JSON */
 export async function generateDailyMealsStream(
   dateStr: string,
   onMealReady: (meal: Meal, type: 'breakfast' | 'lunch' | 'dinner') => void,
   onProgress?: (text: string) => void,
 ): Promise<{ breakfast: Meal; lunch: Meal; dinner: Meal }> {
   onProgress?.('正在生成早餐...')
-  const breakfast = await generateBreakfast(dateStr, onProgress)
+  const breakfast = await generateBreakfast(dateStr)
   onMealReady(breakfast, 'breakfast')
 
   onProgress?.('正在生成午餐...')
-  const lunch = await generateLunch(dateStr, onProgress)
+  const lunch = await generateLunch(dateStr)
   onMealReady(lunch, 'lunch')
 
   onProgress?.('正在生成晚餐...')
-  const dinner = await generateDinner(dateStr, onProgress)
+  const dinner = await generateDinner(dateStr)
   onMealReady(dinner, 'dinner')
 
   return { breakfast, lunch, dinner }
 }
 
-/** 并行生成（保留旧接口） */
 export async function generateDailyMeals(dateStr: string): Promise<{ breakfast: Meal; lunch: Meal; dinner: Meal }> {
   const [breakfast, lunch, dinner] = await Promise.all([
     generateBreakfast(dateStr),

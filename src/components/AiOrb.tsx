@@ -17,15 +17,14 @@ export function AiOrb({ active, progress }: AiOrbProps) {
           transition={{ duration: 0.5, ease: 'easeOut' }}
           className="flex flex-col items-center justify-center py-12 gap-6"
         >
-          {/* Orb container */}
           <div className="relative w-32 h-32">
-            {/* Outer ring */}
+            {/* Outer rings */}
             <motion.div
-              className="absolute inset-0 rounded-full border-2 border-gold-500/20"
+              className="absolute inset-0 rounded-full border-2 border-gold-400/20"
               style={{ animation: 'orb-ring 8s linear infinite' }}
             />
             <motion.div
-              className="absolute inset-2 rounded-full border border-neon-500/30"
+              className="absolute inset-2 rounded-full border border-sage-400/25"
               style={{ animation: 'orb-ring 6s linear infinite reverse' }}
             />
 
@@ -33,21 +32,21 @@ export function AiOrb({ active, progress }: AiOrbProps) {
             <motion.div
               className="absolute inset-4 rounded-full"
               style={{
-                background: 'radial-gradient(circle at 40% 35%, rgba(232,168,56,0.8), rgba(232,168,56,0.3) 50%, rgba(99,102,241,0.2) 80%, transparent)',
-                boxShadow: '0 0 40px rgba(232,168,56,0.3), 0 0 80px rgba(232,168,56,0.1), inset 0 0 30px rgba(232,168,56,0.2)',
+                background: 'radial-gradient(circle at 40% 35%, rgba(245,158,11,0.7), rgba(217,119,6,0.35) 50%, rgba(99,102,241,0.15) 80%, transparent)',
+                boxShadow: '0 0 30px rgba(245,158,11,0.25), 0 0 60px rgba(245,158,11,0.1), inset 0 0 20px rgba(245,158,11,0.15)',
               }}
               animate={{
                 scale: [1, 1.05, 1],
                 boxShadow: [
-                  '0 0 40px rgba(232,168,56,0.3), 0 0 80px rgba(232,168,56,0.1)',
-                  '0 0 60px rgba(232,168,56,0.5), 0 0 100px rgba(232,168,56,0.2)',
-                  '0 0 40px rgba(232,168,56,0.3), 0 0 80px rgba(232,168,56,0.1)',
+                  '0 0 30px rgba(245,158,11,0.25), 0 0 60px rgba(245,158,11,0.1)',
+                  '0 0 50px rgba(245,158,11,0.4), 0 0 80px rgba(245,158,11,0.15)',
+                  '0 0 30px rgba(245,158,11,0.25), 0 0 60px rgba(245,158,11,0.1)',
                 ],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             />
 
-            {/* Scan line across the orb */}
+            {/* Scan line */}
             <div className="absolute inset-4 rounded-full overflow-hidden">
               <div className="scan-line" />
             </div>
@@ -58,8 +57,8 @@ export function AiOrb({ active, progress }: AiOrbProps) {
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
             >
-              <div className="w-8 h-8 rounded-full bg-surface-2/80 flex items-center justify-center backdrop-blur-sm">
-                <Cpu size={16} className="text-gold-400" />
+              <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center backdrop-blur-sm shadow-sm">
+                <Cpu size={16} className="text-gold-500" />
               </div>
             </motion.div>
 
@@ -69,22 +68,16 @@ export function AiOrb({ active, progress }: AiOrbProps) {
                 key={i}
                 className="absolute w-2 h-2 rounded-full bg-gold-400"
                 style={{
-                  top: '50%',
-                  left: '50%',
-                  boxShadow: '0 0 6px rgba(232,168,56,0.8)',
+                  top: '50%', left: '50%',
+                  boxShadow: '0 0 4px rgba(245,158,11,0.6)',
                 }}
                 animate={{
                   x: [0, Math.cos((i * Math.PI) / 2) * 60, 0],
                   y: [0, Math.sin((i * Math.PI) / 2) * 60, 0],
                   scale: [0.5, 1, 0.5],
-                  opacity: [0.3, 1, 0.3],
+                  opacity: [0.3, 0.9, 0.3],
                 }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  delay: i * 0.75,
-                  ease: 'easeInOut',
-                }}
+                transition={{ duration: 3, repeat: Infinity, delay: i * 0.75, ease: 'easeInOut' }}
               />
             ))}
           </div>
@@ -102,7 +95,7 @@ export function AiOrb({ active, progress }: AiOrbProps) {
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={i}
-                  className="w-1.5 h-1.5 rounded-full bg-gold-500"
+                  className="w-1.5 h-1.5 rounded-full bg-gold-400"
                   animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
                   transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.3 }}
                 />

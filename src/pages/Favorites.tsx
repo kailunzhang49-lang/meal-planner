@@ -9,8 +9,8 @@ import { EmptyState } from '../components/EmptyState'
 const mealIcons = { breakfast: Coffee, lunch: Sun, dinner: Soup }
 const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐' }
 const mealColors = {
-  breakfast: { icon: 'bg-gold-500/20 text-gold-400', badge: 'bg-gold-500/15 text-gold-400 border border-gold-500/30' },
-  lunch: { icon: 'bg-neon-500/20 text-neon-400', badge: 'bg-neon-500/15 text-neon-400 border border-neon-500/30' },
+  breakfast: { icon: 'bg-gold-500/20 text-gold-500', badge: 'bg-gold-500/15 text-gold-500 border border-gold-500/30' },
+  lunch: { icon: 'bg-neon-500/20 text-neon-500', badge: 'bg-neon-500/15 text-neon-500 border border-neon-500/30' },
   dinner: { icon: 'bg-gold-700/20 text-gold-500', badge: 'bg-gold-700/15 text-gold-500 border border-gold-700/30' },
 }
 
@@ -70,7 +70,7 @@ export function Favorites() {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-ink-1 truncate flex items-center gap-2">
                       {meal.name}
-                      {cooked && <span className="text-[10px] text-sage-400 bg-sage-500/15 px-1.5 py-0.5 rounded font-bold uppercase">已做</span>}
+                      {cooked && <span className="text-[10px] text-sage-500 bg-sage-500/15 px-1.5 py-0.5 rounded font-bold uppercase">已做</span>}
                     </h3>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <span className={cn('text-[10px] px-2 py-0.5 rounded-md font-bold uppercase', colors.badge)}>{mealLabels[meal.type]}</span>
@@ -85,11 +85,11 @@ export function Favorites() {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={() => handleToggleCooked(meal.id)}
-                      className={cn('p-1.5 rounded-lg transition-colors', cooked ? 'text-sage-400' : 'text-surface-5 hover:text-sage-400')}>
+                      className={cn('p-1.5 rounded-lg transition-colors', cooked ? 'text-sage-500' : 'text-ink-4 hover:text-sage-500')}>
                       <Check size={15} />
                     </motion.button>
                     <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={() => handleRemove(meal)}
-                      className="p-1.5 rounded-lg text-surface-5 hover:text-red-400 transition-colors">
+                      className="p-1.5 rounded-lg text-ink-4 hover:text-red-400 transition-colors">
                       <X size={16} />
                     </motion.button>
                   </div>

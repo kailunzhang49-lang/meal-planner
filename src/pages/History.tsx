@@ -64,13 +64,13 @@ export function History() {
               <button onClick={() => setExpandedId(expandedId === plan.id ? null : plan.id)}
                 className="w-full p-4 flex items-center justify-between text-left hover:bg-surface-3/40 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', plan.cooked ? 'bg-sage-500/20 text-sage-400' : 'bg-surface-4/60 text-ink-3')}>
+                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', plan.cooked ? 'bg-sage-500/20 text-sage-500' : 'bg-surface-3/60 text-ink-3')}>
                     {plan.cooked ? <Check size={18} /> : <ChefHat size={18} />}
                   </div>
                   <div>
                     <div className="font-medium text-ink-1 flex items-center gap-2">
                       {formatDisplayDate(plan.date)}
-                      {plan.cooked && <span className="text-[10px] text-sage-400 bg-sage-500/15 px-1.5 py-0.5 rounded font-bold uppercase">已做</span>}
+                      {plan.cooked && <span className="text-[10px] text-sage-500 bg-sage-500/15 px-1.5 py-0.5 rounded font-bold uppercase">已做</span>}
                     </div>
                     <div className="text-xs text-ink-4 mt-0.5">
                       早餐：{plan.breakfast.name}
@@ -88,8 +88,8 @@ export function History() {
                 {expandedId === plan.id && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
                     <div className="px-4 pb-4 space-y-3 border-t border-surface-4/40 pt-3">
-                      <MealSummary label="早餐" meal={plan.breakfast} color="text-gold-400" bg="bg-gold-500/10" />
-                      {plan.lunch && <MealSummary label="午餐" meal={plan.lunch} color="text-neon-400" bg="bg-neon-500/10" />}
+                      <MealSummary label="早餐" meal={plan.breakfast} color="text-gold-500" bg="bg-gold-500/10" />
+                      {plan.lunch && <MealSummary label="午餐" meal={plan.lunch} color="text-neon-500" bg="bg-neon-500/10" />}
                       <MealSummary label="晚餐" meal={plan.dinner} color="text-gold-500" bg="bg-gold-700/10" />
 
                       <div className="flex items-center justify-between pt-2 border-t border-surface-4/40">
@@ -98,10 +98,10 @@ export function History() {
                         </span>
                         <div className="flex items-center gap-3">
                           <button onClick={() => handleToggleCooked(plan.id, !!plan.cooked)}
-                            className={cn('flex items-center gap-1 text-xs transition-colors', plan.cooked ? 'text-sage-400 hover:text-ink-3' : 'text-ink-4 hover:text-sage-400')}>
+                            className={cn('flex items-center gap-1 text-xs transition-colors', plan.cooked ? 'text-sage-500 hover:text-ink-3' : 'text-ink-4 hover:text-sage-500')}>
                             <Check size={13} />{plan.cooked ? '已做' : '标记做过'}
                           </button>
-                          <button onClick={() => handleRedo(plan)} className="flex items-center gap-1 text-xs text-ink-4 hover:text-gold-400 transition-colors">
+                          <button onClick={() => handleRedo(plan)} className="flex items-center gap-1 text-xs text-ink-4 hover:text-gold-500 transition-colors">
                             <RotateCcw size={13} />再做一次
                           </button>
                           <button onClick={() => handleRemove(plan.id)} className="flex items-center gap-1 text-xs text-ink-4 hover:text-red-400 transition-colors">
@@ -127,7 +127,7 @@ function MealSummary({ label, meal, color, bg }: { label: string; meal: any; col
       <span className={cn('text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md', color, bg)}>{label}</span>
       <h4 className="font-medium text-ink-1 mt-1.5">{meal.name}</h4>
       {meal.staple && (
-        <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-xs text-gold-400">
+        <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-xs text-gold-500">
           <Wheat size={11} /> {meal.staple.name} {meal.staple.amount}
         </div>
       )}

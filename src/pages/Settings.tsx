@@ -57,18 +57,18 @@ export function Settings() {
         {/* API Key */}
         <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card p-5">
           <div className="flex items-center gap-2 mb-3">
-            <Key size={16} className="text-gold-400" />
+            <Key size={16} className="text-gold-500" />
             <h2 className="font-semibold text-ink-1">DeepSeek API Key</h2>
           </div>
           <p className="text-xs text-ink-4 mb-3">API Key 仅保存在浏览器本地，不会上传到任何服务器。</p>
           <input type="password" value={settings.apiKey} onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })} placeholder="sk-..."
-            className="w-full px-4 py-2.5 rounded-xl bg-surface-3/80 border border-surface-4/60 text-sm text-ink-1 placeholder:text-surface-5 focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500/40 transition-all" />
+            className="w-full px-4 py-2.5 rounded-xl bg-surface-3/80 border border-surface-4/60 text-sm text-ink-1 placeholder:text-ink-4 focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500/40 transition-all" />
         </motion.section>
 
         {/* Servings */}
         <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="card p-5">
           <div className="flex items-center gap-2 mb-3">
-            <Users size={16} className="text-gold-400" />
+            <Users size={16} className="text-gold-500" />
             <h2 className="font-semibold text-ink-1">用餐人数</h2>
           </div>
           <div className="flex gap-2">
@@ -85,30 +85,30 @@ export function Settings() {
         {/* Food Restrictions */}
         <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="card p-5">
           <div className="flex items-center gap-2 mb-3">
-            <Utensils size={16} className="text-gold-400" />
+            <Utensils size={16} className="text-gold-500" />
             <h2 className="font-semibold text-ink-1">饮食偏好与限制</h2>
           </div>
           <p className="text-xs text-ink-4 mb-3">自定义食材限制，这些规则会在生成菜谱时传递给 AI。</p>
           <textarea value={settings.foodRestrictions} onChange={(e) => setSettings({ ...settings, foodRestrictions: e.target.value })} rows={6}
-            className="w-full px-4 py-3 rounded-xl bg-surface-3/80 border border-surface-4/60 text-sm text-ink-1 placeholder:text-surface-5 focus:outline-none focus:ring-2 focus:ring-gold-500/40 transition-all resize-y leading-relaxed" />
+            className="w-full px-4 py-3 rounded-xl bg-surface-3/80 border border-surface-4/60 text-sm text-ink-1 placeholder:text-ink-4 focus:outline-none focus:ring-2 focus:ring-gold-500/40 transition-all resize-y leading-relaxed" />
         </motion.section>
 
         {/* Budget */}
         <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="card p-5">
           <div className="flex items-center gap-2 mb-3">
-            <SettingsIcon size={16} className="text-gold-400" />
+            <SettingsIcon size={16} className="text-gold-500" />
             <h2 className="font-semibold text-ink-1">预算设置</h2>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-ink-4 mb-1 block">早餐预算（元）</label>
               <input type="text" value={settings.breakfastBudget} onChange={(e) => setSettings({ ...settings, breakfastBudget: e.target.value })} placeholder="10-15"
-                className="w-full px-4 py-2.5 rounded-xl bg-surface-3/80 border border-surface-4/60 text-sm text-ink-1 placeholder:text-surface-5 focus:outline-none focus:ring-2 focus:ring-gold-500/40 transition-all" />
+                className="w-full px-4 py-2.5 rounded-xl bg-surface-3/80 border border-surface-4/60 text-sm text-ink-1 placeholder:text-ink-4 focus:outline-none focus:ring-2 focus:ring-gold-500/40 transition-all" />
             </div>
             <div>
               <label className="text-xs text-ink-4 mb-1 block">午/晚餐预算（元）</label>
               <input type="text" value={settings.dinnerBudget} onChange={(e) => setSettings({ ...settings, dinnerBudget: e.target.value })} placeholder="10-15"
-                className="w-full px-4 py-2.5 rounded-xl bg-surface-3/80 border border-surface-4/60 text-sm text-ink-1 placeholder:text-surface-5 focus:outline-none focus:ring-2 focus:ring-gold-500/40 transition-all" />
+                className="w-full px-4 py-2.5 rounded-xl bg-surface-3/80 border border-surface-4/60 text-sm text-ink-1 placeholder:text-ink-4 focus:outline-none focus:ring-2 focus:ring-gold-500/40 transition-all" />
             </div>
           </div>
         </motion.section>
@@ -116,7 +116,7 @@ export function Settings() {
         {/* Save */}
         <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleSave}
           className={cn('w-full py-3 rounded-2xl font-semibold text-base transition-all',
-            saved ? 'bg-sage-500/20 text-sage-400 border border-sage-500/30' : 'btn-primary')}>
+            saved ? 'bg-sage-500/20 text-sage-500 border border-sage-500/30' : 'btn-primary')}>
           {saved ? <span className="flex items-center justify-center gap-2"><Check size={18} /> 已保存</span> : '保存设置'}
         </motion.button>
 
@@ -136,7 +136,7 @@ export function Settings() {
           {importMsg && (
             <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
               className={cn('mt-3 flex items-center gap-2 text-sm px-3 py-2 rounded-lg',
-                importError ? 'bg-red-500/10 text-red-400' : 'bg-sage-500/10 text-sage-400')}>
+                importError ? 'bg-red-500/10 text-red-400' : 'bg-sage-500/10 text-sage-500')}>
               {importError ? <AlertCircle size={14} /> : <Check size={14} />}
               {importMsg}
             </motion.div>

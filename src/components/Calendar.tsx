@@ -50,7 +50,7 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => goMonth(-1)}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-ink-3 hover:bg-surface-4/50 transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-ink-3 hover:bg-surface-3/80 transition-colors"
         >
           <ChevronLeft size={18} />
         </motion.button>
@@ -74,7 +74,7 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => goMonth(1)}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-ink-3 hover:bg-surface-4/50 transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-ink-3 hover:bg-surface-3/80 transition-colors"
         >
           <ChevronRight size={18} />
         </motion.button>
@@ -106,21 +106,18 @@ export function Calendar({ selectedDate, onSelect, markedDates }: CalendarProps)
             const isSelected = dateStr === selectedDate
             const isTodayDate = dateStr === today
             const hasMeal = markedDates?.has(dateStr)
-            const isFuture = dateStr > today
 
             return (
               <motion.button
                 key={dateStr}
-                whileHover={{ scale: isFuture ? 1 : 1.08 }}
-                whileTap={{ scale: isFuture ? 1 : 0.92 }}
-                onClick={() => !isFuture && onSelect(dateStr)}
-                disabled={isFuture}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
+                onClick={() => onSelect(dateStr)}
                 className={cn(
                   'relative aspect-square rounded-xl flex flex-col items-center justify-center text-sm transition-all',
-                  isSelected && 'bg-gradient-to-br from-gold-500 to-gold-600 text-surface-0 shadow-lg shadow-gold-500/30',
-                  !isSelected && isTodayDate && 'text-gold-400 font-bold',
-                  !isSelected && !isTodayDate && !isFuture && 'text-ink-2 hover:bg-surface-4/40',
-                  isFuture && 'text-surface-5 cursor-default',
+                  isSelected && 'bg-gradient-to-br from-gold-400 to-gold-500 text-white shadow-lg shadow-gold-400/30',
+                  !isSelected && isTodayDate && 'text-gold-500 font-bold',
+                  !isSelected && !isTodayDate && 'text-ink-2 hover:bg-surface-3/60',
                 )}
               >
                 <span className="font-mono text-xs">{day}</span>
